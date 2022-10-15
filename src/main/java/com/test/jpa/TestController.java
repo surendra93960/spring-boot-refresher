@@ -6,10 +6,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
@@ -39,7 +39,7 @@ public class TestController {
         return invoiceRepository.findAll();
     }
     @GetMapping("/linitem/{invoiceUrn}")
-    public List<InvoiceEntity> getAlllineitems(@PathVariable(value = "invoiceUrn") Long invoiceUrn){
+    public List<InvoiceEntity> updateAndGetAllLineItems(@PathVariable(value = "invoiceUrn") Long invoiceUrn){
         Optional<InvoiceEntity> byId = invoiceRepository.findById(invoiceUrn);
         InvoiceEntity invoiceEntity = byId.get();
         invoiceEntity.setInvoiceName("updated invoice");
@@ -51,23 +51,29 @@ public class TestController {
     }
 
     @PostMapping("/invoice/save")
+    @Transactional
     public ResponseEntity<InvoiceEntity> saveInvoice(@RequestBody InvoiceDTORequest invoicedto){
 
         log.info("invoice DTO is {}",invoicedto);
         List<LineItemEntity> lineItemEntities = new ArrayList<>();
         //LineItemEntity lineItemEntity = null;
+        InvoiceEntity invoiceEntity = InvoiceEntity.builder()
+                .invoiceName(invoicedto.getInvoiceName())
+                .invoiceUrn(invoicedto.getInvoiceUrn())
+                .build();
+
         invoicedto.getLineItemDTOS().stream().forEach(lineItemDTO -> {
             LineItemEntity lineItemEntity = LineItemEntity.builder()
                     .lineItemName(lineItemDTO.getLineItemName())
+                    .invoiceEntity(invoiceEntity)
                     .build();
             lineItemEntities.add(lineItemEntity);
         });
+        invoiceEntity.setLineItemEntityList(lineItemEntities);
+        InvoiceEntity inv = invoiceRepository.save(invoiceEntity);
 
-        InvoiceEntity invoiceEntity = InvoiceEntity.builder()
-                .invoiceName(invoicedto.getInvoiceName())
-                .lineItemEntityList(lineItemEntities)
-                .build();
-        return new ResponseEntity<>(invoiceRepository.save(invoiceEntity),HttpStatus.CREATED);
+
+        return new ResponseEntity<InvoiceEntity>(inv,HttpStatus.CREATED);
         //return "";
     }
 
