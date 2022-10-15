@@ -15,6 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 public class InvoiceEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "invoice_urn", nullable = false)
     private Long invoiceUrn;
 

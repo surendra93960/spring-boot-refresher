@@ -59,7 +59,6 @@ public class TestController {
         //LineItemEntity lineItemEntity = null;
         InvoiceEntity invoiceEntity = InvoiceEntity.builder()
                 .invoiceName(invoicedto.getInvoiceName())
-                .invoiceUrn(invoicedto.getInvoiceUrn())
                 .build();
 
         invoicedto.getLineItemDTOS().stream().forEach(lineItemDTO -> {

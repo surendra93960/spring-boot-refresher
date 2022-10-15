@@ -12,7 +12,7 @@ import java.util.List;
 @ToString
 public class InvoiceDTORequest {
 
-    private Long invoiceUrn;
+    //private Long invoiceUrn;
     private String invoiceName;
 
     List<LineItemDTO> lineItemDTOS;
