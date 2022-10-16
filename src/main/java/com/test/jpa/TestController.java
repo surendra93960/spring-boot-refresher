@@ -56,18 +56,41 @@ public class TestController {
 
         log.info("invoice DTO is {}",invoicedto);
         List<LineItemEntity> lineItemEntities = new ArrayList<>();
+        List<LineItemDetailEntity> lineItemDetailEntities = new ArrayList<>();
         //LineItemEntity lineItemEntity = null;
         InvoiceEntity invoiceEntity = InvoiceEntity.builder()
                 .invoiceName(invoicedto.getInvoiceName())
                 .build();
 
         invoicedto.getLineItemDTOS().stream().forEach(lineItemDTO -> {
+
+            //Lineitem
             LineItemEntity lineItemEntity = LineItemEntity.builder()
                     .lineItemName(lineItemDTO.getLineItemName())
-                    .invoiceEntity(invoiceEntity)
+                    //.invoiceEntity(invoiceEntity)
                     .build();
+
+
+            //LineitemDetails
+            lineItemDTO.getLineItemDetailDTOS().forEach(lineItemDetailDTO -> {
+                LineItemDetailEntity lineItemDetailEntity = LineItemDetailEntity.builder()
+                        .lineItemDetailName(lineItemDetailDTO.getLineItemDetailName())
+                        .lineItemEntity(lineItemEntity)
+                        .build();
+
+                lineItemDetailEntities.add(lineItemDetailEntity);
+
+            });
+            lineItemEntity.setLineItemDetailEntities(lineItemDetailEntities);
+            lineItemEntity.setInvoiceEntity(invoiceEntity);
+
             lineItemEntities.add(lineItemEntity);
+
         });
+
+        //invoicedto.getLineItemDTOS().stream().forEach();
+
+
         invoiceEntity.setLineItemEntityList(lineItemEntities);
         InvoiceEntity inv = invoiceRepository.save(invoiceEntity);
 

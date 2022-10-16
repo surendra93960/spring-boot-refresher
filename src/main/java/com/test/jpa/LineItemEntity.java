@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Data
@@ -27,6 +28,7 @@ public class LineItemEntity {
     @JsonIgnore
     private InvoiceEntity invoiceEntity;
 
-
+    @OneToMany(mappedBy = "lineItemEntity",fetch = FetchType.EAGER,cascade = CascadeType.ALL)
+    private List<LineItemDetailEntity> lineItemDetailEntities;
 
 }
